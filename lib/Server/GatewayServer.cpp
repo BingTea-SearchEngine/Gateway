@@ -1,17 +1,23 @@
 #include "GatewayServer.hpp"
 #include "Common.hpp"
 
-Server::Server(int serverPort, int max_clients, std::string socketPath) {
-    _serverSock = socket(AF_UNIX, SOCK_STREAM, 0);
+Server::Server(int serverPort, int max_clients) {
+    _serverSock = socket(AF_INET, SOCK_STREAM, 0);
     if (_serverSock < 0) {
         exit(EXIT_FAILURE);
     }
 
-    unlink(socketPath.c_str());
+    int opt = 1;
+    if (setsockopt(_serverSock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        perror("setsockopt failed");
+        close(_serverSock);
+        exit(EXIT_FAILURE);
+    }
 
-    _serverAddr.sun_family = AF_UNIX;
-    strncpy(_serverAddr.sun_path, socketPath.c_str(),
-            sizeof(_serverAddr.sun_path) - 1);
+    _serverAddr.sin_family = AF_INET;
+    _serverAddr.sin_addr.s_addr = INADDR_ANY; // Listen on all available interfaces
+    _serverAddr.sin_port = htons(serverPort); // Convert port to network byte order
+    
     if (bind(_serverSock, (struct sockaddr*)&_serverAddr, sizeof(_serverAddr)) <
         0) {
         exit(EXIT_FAILURE);

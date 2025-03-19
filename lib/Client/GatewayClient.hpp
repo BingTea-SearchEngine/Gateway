@@ -22,6 +22,6 @@ class Client {
     std::vector<std::string> SendMessages(std::vector<std::string> messages);
 
    private:
-    struct sockaddr_un _serverAddr;
+    struct sockaddr_in _serverAddr;
     int _clientSock;
 };

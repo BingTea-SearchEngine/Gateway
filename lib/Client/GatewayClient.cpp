@@ -3,15 +3,15 @@
 #include <sys/socket.h>
 
 Client::Client(std::string serverIp, int serverPort, std::string socketPath) {
-    _clientSock = socket(AF_UNIX, SOCK_STREAM, 0);
+    _clientSock = socket(AF_INET, SOCK_STREAM, 0);
     if (_clientSock < 0) {
         exit(EXIT_FAILURE);
     }
 
     // Set up the server address structure
-    _serverAddr.sun_family = AF_UNIX;
-    strncpy(_serverAddr.sun_path, socketPath.c_str(),
-            sizeof(_serverAddr.sun_path) - 1);
+    _serverAddr.sin_family = AF_INET;
+    _serverAddr.sin_port = htons(serverPort); // Replace with the actual port
+    inet_pton(AF_INET, serverIp.data(), &_serverAddr.sin_addr); // Replace with actual IP
 
     // Connect to the server
     if (connect(_clientSock, (struct sockaddr*)&_serverAddr,

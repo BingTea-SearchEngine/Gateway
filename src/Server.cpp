@@ -6,7 +6,7 @@ using std::cout, std::endl;
 
 int main() {
     cout << "Server started" << endl;
-    Server server(80, 10, "/tmp/path");
+    Server server(8001, 10);
     while (true) {
         auto requests = server.GetMessagesBlocking();
         for (auto r : requests) {

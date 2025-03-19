@@ -23,7 +23,7 @@ class Server {
    public:
     // Creates a thread that continously listens on a given socket and puts requests into
     // receivedRequests
-    Server(int serverPort, int max_clients, std::string socketPath);
+    Server(int serverPort, int max_clients);
 
     ~Server();
 
@@ -46,7 +46,7 @@ class Server {
     std::mutex _requestsMutex;
     std::condition_variable _requestsCv;
 
-    struct sockaddr_un _serverAddr;
+    struct sockaddr_in _serverAddr;
     int _serverSock;
 
     // These functions are used in hte listening loop and are in a separate thread
