@@ -14,7 +14,7 @@
 
 class Client {
    public:
-    Client(std::string serverIp, int serverPort, std::string socketPath);
+    Client(std::string serverIp, int serverPort);
 
     std::optional<Message> GetMessageBlocking();
 

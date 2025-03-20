@@ -2,7 +2,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-Client::Client(std::string serverIp, int serverPort, std::string socketPath) {
+Client::Client(std::string serverIp, int serverPort) {
     _clientSock = socket(AF_INET, SOCK_STREAM, 0);
     if (_clientSock < 0) {
         exit(EXIT_FAILURE);
