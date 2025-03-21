@@ -32,4 +32,5 @@ class Client {
     int _clientSock;
 
     pollfd _fds[1];
+    fd_set _readfds;
 };

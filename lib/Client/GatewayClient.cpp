@@ -24,6 +24,9 @@ Client::Client(std::string serverIp, int serverPort) {
 
     _fds[0].fd = _clientSock;
     _fds[0].events = POLLIN;
+
+    FD_ZERO(&_readfds);
+    FD_SET(_clientSock, &_readfds);
 }
 
 std::optional<Message> Client::GetMessage() {
@@ -35,6 +38,13 @@ std::optional<Message> Client::GetMessage() {
 }
 
 std::optional<Message> Client::GetMessageBlocking() {
+
+    int result = select(_clientSock + 1, &_readfds, nullptr, nullptr, nullptr);
+    if (result <= 0) {
+        // Error or interruption
+        return std::nullopt;
+    }
+
     uint32_t messageLength = 0;
     int bytesReceived = 0;
     // Get message size
