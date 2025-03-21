@@ -5,7 +5,7 @@
 using std::cout, std::endl;
 
 int main() {
-    Client client("35.1.252.67", 8001, "/tmp/path");
+    Client client("35.1.252.67", 8001);
     std::vector<std::string> messages = {"Hi this is the server",
                                          "Did you get this?"};
     client.SendMessages(messages);
