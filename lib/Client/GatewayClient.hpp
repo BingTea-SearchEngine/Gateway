@@ -24,8 +24,8 @@ class Client {
 
     std::optional<Message> GetMessageBlocking();
 
-    // Try sending all messages. Failed ones are put into output vector
-    std::vector<std::string> SendMessages(std::vector<std::string> messages);
+    bool SendMessage(std::string message);
+
 
    private:
     struct sockaddr_in _serverAddr;

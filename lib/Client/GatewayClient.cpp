@@ -72,19 +72,13 @@ std::optional<Message> Client::GetMessageBlocking() {
     return std::nullopt;
 }
 
-std::vector<std::string> Client::SendMessages(
-    std::vector<std::string> messages) {
-    std::vector<std::string> errors;
-    for (const auto& m : messages) {
-        int messageLen = htonl(m.size());
-        if (send(_clientSock, &messageLen, sizeof(messageLen), 0) <= 0) {
-            errors.push_back(m);
-            continue;
-        }
-        if (send(_clientSock, m.data(), m.size(), 0) <= 0) {
-            errors.push_back(m);
-            continue;
-        }
+bool Client::SendMessage(std::string message) {
+    int messageLen = htonl(message.size());
+    if (send(_clientSock, &messageLen, sizeof(messageLen), 0) <= 0) {
+        return false;
     }
-    return errors;
+    if (send(_clientSock, message.data(), message.size(), 0) <= 0) {
+        return false;
+    }
+    return true;
 }
