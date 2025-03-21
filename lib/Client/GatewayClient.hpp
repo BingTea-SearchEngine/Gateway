@@ -6,9 +6,12 @@
 #include <sys/un.h>
 #include <unistd.h>
 
+#include <iostream>
 #include <optional>
 #include <string>
 #include <vector>
+
+using std::cout, std::cerr, std::endl;
 
 #include "Common.hpp"
 

@@ -5,17 +5,20 @@
 Client::Client(std::string serverIp, int serverPort) {
     _clientSock = socket(AF_INET, SOCK_STREAM, 0);
     if (_clientSock < 0) {
+        cerr << "Error creating socket" << endl;
         exit(EXIT_FAILURE);
     }
 
     // Set up the server address structure
     _serverAddr.sin_family = AF_INET;
-    _serverAddr.sin_port = htons(serverPort); // Replace with the actual port
-    inet_pton(AF_INET, serverIp.data(), &_serverAddr.sin_addr); // Replace with actual IP
+    _serverAddr.sin_port = htons(serverPort);
+    inet_pton(AF_INET, serverIp.data(), &_serverAddr.sin_addr);
 
     // Connect to the server
     if (connect(_clientSock, (struct sockaddr*)&_serverAddr,
                 sizeof(_serverAddr)) < 0) {
+        close(_clientSock);
+        cerr << "Error connecting to server" << endl;
         exit(EXIT_FAILURE);
     }
 }
