@@ -141,7 +141,6 @@ int Server::_addMessage(int clientSock) {
     }
 
     messageLength = ntohl(messageLength);
-    cout << messageLength << endl;
     if (messageLength > 0) {
         std::string message(messageLength, '\0');
         if (recv(clientSock, message.data(), messageLength, MSG_WAITALL) <= 0) {
