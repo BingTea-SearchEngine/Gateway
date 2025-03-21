@@ -21,6 +21,17 @@ Client::Client(std::string serverIp, int serverPort) {
         cerr << "Error connecting to server" << endl;
         exit(EXIT_FAILURE);
     }
+
+    _fds[0].fd = _clientSock;
+    _fds[0].events = POLLIN;
+}
+
+std::optional<Message> Client::GetMessage() {
+    int ret = poll(_fds, 1, 0);
+    if (ret > 0 && (_fds[0].revents & POLLIN)) {
+        return GetMessageBlocking();
+    }
+    return std::nullopt;
 }
 
 std::optional<Message> Client::GetMessageBlocking() {
@@ -52,6 +63,7 @@ std::optional<Message> Client::GetMessageBlocking() {
             };
         } else {
             return Message{
+                .senderSock = -1,
                 .receiverSock = _clientSock,
                 .msg = message,
             };

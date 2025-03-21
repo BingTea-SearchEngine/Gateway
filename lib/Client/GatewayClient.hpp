@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
+#include <poll.h>
 
 #include <iostream>
 #include <optional>
@@ -19,6 +20,8 @@ class Client {
    public:
     Client(std::string serverIp, int serverPort);
 
+    std::optional<Message> GetMessage();
+
     std::optional<Message> GetMessageBlocking();
 
     // Try sending all messages. Failed ones are put into output vector
@@ -27,4 +30,6 @@ class Client {
    private:
     struct sockaddr_in _serverAddr;
     int _clientSock;
+
+    pollfd _fds[1];
 };
