@@ -26,11 +26,12 @@ class Client {
 
     bool SendMessage(std::string message);
 
-
    private:
     struct sockaddr_in _serverAddr;
     int _clientSock;
 
     pollfd _fds[1];
     fd_set _readfds;
+
+    bool _connClosed;
 };

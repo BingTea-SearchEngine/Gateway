@@ -7,13 +7,11 @@ using std::cout, std::endl;
 int main() {
     cout << "Server started" << endl;
     Server server(8001, 10);
-    while (true) {
-        auto requests = server.GetMessagesBlocking();
-        for (auto r : requests) {
-            cout << r << endl;
-            server.SendMessage(Message{.senderSock = server.GetServerSocketFd(),
-                                       .receiverSock = r.senderSock,
-                                       .msg = "This is server"});
-        }
+    auto requests = server.GetMessagesBlocking();
+    for (auto r : requests) {
+        cout << r << endl;
+        server.SendMessage(Message{.senderSock = server.GetServerSocketFd(),
+                                   .receiverSock = r.senderSock,
+                                   .msg = "This is server"});
     }
 }

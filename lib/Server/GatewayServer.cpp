@@ -128,6 +128,15 @@ void* Server::listeningLoop() {
             }
         }
     }
+
+    for (auto it = clientSockets.begin(); it != clientSockets.end(); ){
+            int clientSock = *it;
+        if (FD_ISSET(clientSock, &readFds)) {
+            int message = 0;
+            send(clientSock, &message, sizeof(message), 0);
+        }
+        it++;
+    }
     return nullptr;
 }
 

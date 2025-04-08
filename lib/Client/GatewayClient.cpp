@@ -9,6 +9,15 @@ Client::Client(std::string serverIp, int serverPort) {
         exit(EXIT_FAILURE);
     }
 
+    timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 500000;
+
+    if (setsockopt(_clientSock, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout)) < 0) {
+        std::cerr << "Failed to set send timeout: " << strerror(errno) << '\n';
+        throw std::runtime_error("Failed to set socket opt");
+    }
+
     // Set up the server address structure
     _serverAddr.sin_family = AF_INET;
     _serverAddr.sin_port = htons(serverPort);
@@ -19,7 +28,7 @@ Client::Client(std::string serverIp, int serverPort) {
                 sizeof(_serverAddr)) < 0) {
         close(_clientSock);
         cerr << "Error connecting to server" << endl;
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("Failed to connect to server");
     }
 
     _fds[0].fd = _clientSock;
@@ -27,6 +36,7 @@ Client::Client(std::string serverIp, int serverPort) {
 
     FD_ZERO(&_readfds);
     FD_SET(_clientSock, &_readfds);
+
 }
 
 std::optional<Message> Client::GetMessage() {
@@ -38,10 +48,8 @@ std::optional<Message> Client::GetMessage() {
 }
 
 std::optional<Message> Client::GetMessageBlocking() {
-
     int result = select(_clientSock + 1, &_readfds, nullptr, nullptr, nullptr);
     if (result <= 0) {
-        // Error or interruption
         return std::nullopt;
     }
 
@@ -50,11 +58,15 @@ std::optional<Message> Client::GetMessageBlocking() {
     // Get message size
     bytesReceived +=
         recv(_clientSock, &messageLength, sizeof(messageLength), MSG_WAITALL);
-    if (bytesReceived <= 0) {
+    if (bytesReceived < 0) {
+        return std::nullopt;
+    } else if (bytesReceived == 0) {
+        cerr << "Connection closed" << endl;
         return std::nullopt;
     }
 
     messageLength = ntohl(messageLength);
+
     if (messageLength > 0) {
         std::string message(messageLength, '\0');
         if (recv(_clientSock, message.data(), messageLength, MSG_WAITALL) <=
@@ -92,3 +104,4 @@ bool Client::SendMessage(std::string message) {
     }
     return true;
 }
+
