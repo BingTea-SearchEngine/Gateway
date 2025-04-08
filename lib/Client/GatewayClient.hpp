@@ -20,6 +20,8 @@ class Client {
    public:
     Client(std::string serverIp, int serverPort);
 
+    ~Client();
+
     std::optional<Message> GetMessage();
 
     std::optional<Message> GetMessageBlocking();

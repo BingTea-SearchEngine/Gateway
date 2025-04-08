@@ -39,6 +39,10 @@ Client::Client(std::string serverIp, int serverPort) {
 
 }
 
+Client::~Client() {
+    close(_clientSock);
+}
+
 std::optional<Message> Client::GetMessage() {
     int ret = poll(_fds, 1, 0);
     if (ret > 0 && (_fds[0].revents & POLLIN)) {
