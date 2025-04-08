@@ -13,6 +13,5 @@ int main() {
         cout << *msg << endl;
     }
     cout << *client.GetMessageBlocking() << endl;
-    cout << client.ConnClosed();
     client.SendMessage("HI");
 }
