@@ -104,8 +104,8 @@ void* Server::listeningLoop() {
             socklen_t clientLen = sizeof(clientAddr);
             int clientSock =
                 accept(_serverSock, (struct sockaddr*)&clientAddr, &clientLen);
-
             if (clientSock < 0) {
+                close(clientSock);
             } else {
                 FD_SET(clientSock, &masterSet);
                 clientSockets.push_back(clientSock);
