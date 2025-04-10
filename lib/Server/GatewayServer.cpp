@@ -103,7 +103,7 @@ void* Server::listeningLoop() {
 
         // Accept new connections
         if (FD_ISSET(_serverSock, &readFds)) {
-            struct sockaddr_un clientAddr;
+            struct sockaddr_in clientAddr;
             socklen_t clientLen = sizeof(clientAddr);
             int clientSock =
                 accept(_serverSock, (struct sockaddr*)&clientAddr, &clientLen);
@@ -122,7 +122,14 @@ void* Server::listeningLoop() {
 
             if (FD_ISSET(clientSock, &readFds)) {
                 if (_addMessage(clientSock) == 0) {
+                    FD_CLR(clientSock, &masterSet);
                     it = clientSockets.erase(it);
+                    if (clientSock == maxFd) {
+                        maxFd = _serverSock;  // Reset maxFd to the server socket.
+                        for (int sock : clientSockets) {
+                            maxFd = std::max(maxFd, sock);
+                        }
+                    }
                 } else {
                     it++;
                 }
