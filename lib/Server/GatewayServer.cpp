@@ -48,7 +48,7 @@ std::vector<Message> Server::GetMessages() {
 
 std::vector<Message> Server::GetMessagesBlocking() {
     std::unique_lock<std::mutex> lock(_requestsMutex);
-    while (_requests.empty() || _stopFlag) {
+    while (_requests.empty() && !_stopFlag) {
         _requestsCv.wait(lock);
     }
     std::vector<Message> output;
@@ -94,7 +94,10 @@ void* Server::listeningLoop() {
     while (!_stopFlag) {
         readFds = masterSet;
         // Select blocks until new connection
-        if (select(maxFd + 1, &readFds, nullptr, nullptr, nullptr) < 0) {
+        struct timeval tv;
+        tv.tv_sec = 1; // one-second timeout
+        tv.tv_usec = 0;
+        if (select(maxFd + 1, &readFds, nullptr, nullptr, &tv) < 0) {
             continue;
         }
 
